@@ -1,19 +1,39 @@
-# Project requirements
+# Machine learning project requirements
 
-Source: `requirements/project-requirements.pdf` (the instructor's original Polish document). The Amazon Video Games dataset provides material for practical tests of the selected AI tool. This checklist is a work plan, not a record of completed tests.
+Source: `requirements/project-requirements.pdf` (ML_proj_1.pdf, the instructor's original Polish document). This checklist describes required work, not completed analyses. It replaces the checklist for the previously supplied assignment.
 
-- [ ] Form a team of 2-3 people and select one available AI tool; coordinate the selection with the instructor.
-- [ ] Describe the tool: name, developer, access, type, uses, target users, pricing model, supported data, AI features, and applications in computing.
-- [ ] Explain the technology: type of AI, inputs and outputs, interaction, additional sources, requirements, and limitations; explicitly identify information that is not public.
-- [ ] `experiments/task-01-success/`: first correctly solved task, exact prompt, actual response, independent verification, and imperfections.
-- [ ] `experiments/task-02-success/`: second correctly solved task of a different type, prompt, response, and justified assessment.
-- [ ] `experiments/task-03-failure/`: genuine failure, prompt, response, evidence of the error, correct solution, and explanation; avoid artificially tricking the tool.
-- [ ] `experiments/screenshots/`: screenshots documenting the tests; `prompts/` and `responses/`: exact records of attempts.
-- [ ] For each attempt, record the date, tool/model name and version, settings, input files or data rows, prompt, complete response, correctness criteria, and verification method.
-- [ ] Assess strengths and weaknesses using evidence; examine error types and frequency, prompt wording, retries, and reformulation.
-- [ ] Discuss privacy, confidentiality, misinformation, risks in computing, human verification, and consequences of uncritical use.
-- [ ] Prepare a report in `reports/`: title page, team, objective, tool, technology, tests 1-3, error analysis, strengths/weaknesses, ethics, conclusions, and references; include screenshots.
-- [ ] Prepare approximately 10-15 slides in `reports/presentation/`; deliver a 10-15 minute presentation focused on tests and conclusions.
-- [ ] Distinguish verified facts, observations, and conclusions; list sources and disclose how AI was used to prepare the report or presentation.
+## Organization and repository
 
-Grading: tool description 10 points, technology 10 points, task quality and variety 10 points, strengths/weaknesses analysis 10 points, presentation 10 points; total 50 points.
+- [ ] Form a team of 4-5 people and record names, student IDs, and responsibilities in the submitted report.
+- [ ] Choose a topic and formulate research questions that combine insights from natural-language and numeric analyses.
+- [x] Store source code, the prepared datasets, and data provenance on GitHub.
+- [ ] Store all project reports in the repository.
+- [ ] Provide complete instructions for reproducing results and viewing them through a simple interface (for example, Gradio).
+
+## Stage 1
+
+- [ ] Describe two public, real-world datasets: one containing natural-language data and one containing numeric data. Do not use simulated or synthetic data.
+- [ ] Provide complete source information and, if subsets are used, exact instructions for reproducing their selection.
+- [ ] Perform exploratory data analysis using methods from Statistics or Python for DS and AI.
+- [ ] State research questions and connect them to the datasets.
+- [ ] Prepare one PDF report containing team details and responsibilities, data sources, subset selection if applicable, EDA, research questions, and the GitHub repository link.
+- [ ] Submit that single PDF to the project section on Platon.
+
+**Deadline discrepancy:** the document header says Friday, October 30, 2026, at 23:59; the Stage 1 section says October 31, 2026, at 23:59. Confirm the correct date with the instructor; do not assume the later date.
+
+## Full project
+
+- [ ] Discuss suitable supervised methods and explain why they are useful; select and apply two, explain their results, and study the selected methods further.
+- [ ] Discuss suitable unsupervised methods and explain why they are useful; select and apply two, explain their results, and study the selected methods further.
+- [ ] Include supervised and unsupervised NLP models.
+- [ ] Include transformer-based models.
+- [ ] Interpret the analyses to answer the research questions and present the results.
+- [ ] Implement a simple interface for exploring results and document how to run it.
+
+## Current dataset mapping
+
+- Natural-language dataset: `data/text/reviews_text.csv.gz` (review text and accompanying identifiers/fields).
+- Numeric datasets: `data/numeric/reviews_numeric.csv.gz` and `data/numeric/products_numeric.csv` (numeric features with identifiers and product titles retained).
+- Shared provenance: Amazon Reviews 2023, Video Games category. These are complementary views of the same public source, not independent collections. Describe this relationship explicitly and confirm with the instructor if independent sources are expected.
+- The complete category was retained; no sampling was applied during preparation. Any later sampling or filtering must be documented separately.
+- Original row counts, source URLs, pinned revision, missing-value counts, and checksums: `data/manifests/download_manifest.json`.

@@ -3,7 +3,9 @@
 Analysis of Amazon Reviews 2023, Video Games category.
 The complete category contains **4,624,615 reviews** and **137,269 products**.
 
-The dataset supports practical evaluation of an AI tool. The instructor's original requirements are in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`. The tool, team members, and specific test tasks still need to be selected.
+This machine learning project combines natural-language and numeric data from a public, real-world dataset. The instructor's requirements (ML_proj_1.pdf) are stored in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`. The team, research questions, and methods still need to be selected.
+
+Stage 1 requires two datasets, exploratory data analysis, research questions, and one PDF report. Later work includes two supervised methods, two unsupervised methods, NLP, transformer models, and a simple interface for exploring results. These analyses, models, and the interface are not implemented yet.
 
 ## Project structure
 
@@ -15,22 +17,23 @@ The dataset supports practical evaluation of an AI tool. The instructor's origin
 | `data/combined/` | Combined text and numeric review features |
 | `data/manifests/` | Data provenance, row counts, and original SHA-256 checksums |
 | `scripts/` | Data preparation, restoration, and joining |
-| `notebooks/` | Exploration and experiments |
+| `notebooks/eda/` | Exploratory data analysis |
 | `src/ml_project/` | Project source code |
 | `models/` | Local model artifacts |
 | `reports/figures/` | Report figures |
 | `docs/` | Documentation |
 | `tests/` | Code tests |
-| `experiments/` | Three practical AI tests, prompts, responses, and screenshots |
-| `reports/presentation/` | Presentation of approximately 10-15 slides |
+| `experiments/` | Supervised, unsupervised, NLP, and transformer experiments |
+| `reports/stage-1/` | First-stage report and supporting material |
+| `app/` | Planned interface for exploring results |
 
 Large files are stored using **Git LFS**. A regular repository ZIP may contain only LFS pointers. To clone the repository:
 
 ```powershell
- git lfs install
- git clone https://github.com/Vamraf/ml-project.git
- cd ml-project
- git lfs pull
+git lfs install
+git clone https://github.com/Vamraf/ml-project.git
+cd ml-project
+git lfs pull
 ```
 
 ## Data
@@ -60,6 +63,10 @@ This creates `data/combined/reviews_combined.csv.gz` locally. Generated combined
 Original tables: `products_numeric.csv`, `reviews_numeric.csv.gz`, and `reviews_text.csv.gz`. Product features can be joined to reviews separately using `parent_asin`.
 
 Source: [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/). URLs pinned to a source revision and checksums are recorded in `data/manifests/download_manifest.json`. Check the source terms before further distribution or use.
+
+## Project plan
+
+See `docs/project-checklist.md` for the required deliverables and `docs/research-plan.md` for a proposed use of the two datasets. The assignment lists conflicting Stage 1 deadlines: October 30 and October 31, 2026, both at 23:59. Confirm the correct date with the instructor.
 
 ## Branches
 
