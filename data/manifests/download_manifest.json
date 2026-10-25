@@ -1,0 +1,65 @@
+{
+  "category": "Video_Games",
+  "retrieved_at_utc": "2026-10-23T19:47:54.341895+00:00",
+  "source_page": "https://amazon-reviews-2023.github.io/",
+  "raw_files": {
+    "Video_Games.jsonl": {
+      "url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/2b6d039ed471f2ba5fd2acb718bf33b0a7e5598e/raw/review_categories/Video_Games.jsonl",
+      "bytes": 2682948518,
+      "sha256": "7bde9e0a039bdb321e993bfe78a6c7d438fb1504b1ad152c0cb6a33a8b7cb26a",
+      "expected_sha256": "7bde9e0a039bdb321e993bfe78a6c7d438fb1504b1ad152c0cb6a33a8b7cb26a",
+      "revision": "2b6d039ed471f2ba5fd2acb718bf33b0a7e5598e"
+    },
+    "meta_Video_Games.jsonl": {
+      "url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/2b6d039ed471f2ba5fd2acb718bf33b0a7e5598e/raw/meta_categories/meta_Video_Games.jsonl",
+      "bytes": 437375785,
+      "sha256": "3ad94dfaa8dfed23c5f420aa9ddec415d00f2b8ec9f2d796f487b4b2c4d256de",
+      "expected_sha256": "3ad94dfaa8dfed23c5f420aa9ddec415d00f2b8ec9f2d796f487b4b2c4d256de",
+      "revision": "2b6d039ed471f2ba5fd2acb718bf33b0a7e5598e"
+    }
+  },
+  "derived_files": {
+    "products_numeric.csv": {
+      "bytes": 16713346,
+      "sha256": "03028f6654f08019b7adf480e0e968abd6633c52b9566d9222106eea8228b989",
+      "rows": 137269
+    },
+    "reviews_text.csv.gz": {
+      "bytes": 866759971,
+      "sha256": "422edae396b6e11cc918b7db0b2f7cbc7497ed78cd32de84fdc093001f5eea98",
+      "rows": 4624615,
+      "gzip_member_filename": "reviews_text.csv"
+    },
+    "reviews_numeric.csv.gz": {
+      "bytes": 223156415,
+      "sha256": "e027b6dd8073c0ed78495d49ebee9411ca69508393b52ce577fb61679ee24b35",
+      "rows": 4624615,
+      "gzip_member_filename": "reviews_numeric.csv"
+    }
+  },
+  "product_rows": 137269,
+  "unique_metadata_parent_asin": 137269,
+  "review_rows": 4624615,
+  "reviews_with_empty_text": 3618,
+  "reviews_matching_metadata": 4624615,
+  "product_numeric_missing": {
+    "price_usd": 75297,
+    "average_rating": 0,
+    "rating_number": 0,
+    "image_count": 0,
+    "video_count": 0,
+    "feature_count": 0,
+    "category_count": 0,
+    "description_section_count": 0
+  },
+  "rating_counts": {
+    "4.0": 617251,
+    "5.0": 2827881,
+    "3.0": 340086,
+    "1.0": 589519,
+    "2.0": 249878
+  },
+  "sampling": "None: full category retained; no rows dropped.",
+  "product_title_source": "meta_Video_Games.jsonl:title, joined by parent_asin",
+  "products_with_empty_title": 9
+}
