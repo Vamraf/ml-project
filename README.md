@@ -72,4 +72,4 @@ See `docs/project-checklist.md` for the required deliverables, `docs/research-pl
 
 ## Branches
 
-`main` contains the project structure and dataset. Future work can use separate branches named `codex/<task-name>`.
+`main` contains the project structure and dataset.
