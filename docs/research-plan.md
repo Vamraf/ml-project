@@ -2,6 +2,8 @@
 
 This is a starting proposal, not a completed experiment or an additional assignment requirement. Confirm the final questions and methods with the team and the course material.
 
+The team and task owners are listed in `team.md`. Stage 1 is due on October 30, 2026, at 23:59 (Europe/Warsaw).
+
 ## Research questions
 
 1. How well can review text predict a review's rating or sentiment compared with non-text review and product features?
@@ -22,7 +24,9 @@ This is a starting proposal, not a completed experiment or an additional assignm
 - Consider product-level or chronological splits to reduce leakage. Fit vectorizers, preprocessing, and models only on training data.
 - Check whether product-level aggregate ratings or counts reveal information unavailable at prediction time before using them as features.
 - Use appropriate baselines and metrics; account for the strongly imbalanced rating distribution.
-- Select two supervised and two unsupervised methods taught in class, then plan NLP and transformer experiments.
+- Daniil will implement two text classifiers; Andrei will develop and interpret models using numeric features. Final supervised model choices remain to be agreed.
+- Mykola will apply K-means to products and Latent Dirichlet Allocation (LDA) to text topics as the two planned unsupervised methods.
+- Artur will implement a transformer-based text model and compare it with the baseline NLP models. Valentyn will integrate the models and implement the results interface.
 - Save configurations, seeds, splits, metrics, and figures so results can be reproduced and displayed in the planned interface.
 
 ## Repository locations

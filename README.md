@@ -3,7 +3,9 @@
 Analysis of Amazon Reviews 2023, Video Games category.
 The complete category contains **4,624,615 reviews** and **137,269 products**.
 
-This machine learning project combines natural-language and numeric data from a public, real-world dataset. The instructor's requirements (ML_proj_1.pdf) are stored in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`.
+This machine learning project combines natural-language and numeric data from a public, real-world dataset. The instructor's requirements (ML_proj_1.pdf) are stored in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`. Team members, student IDs, and responsibilities are recorded in [docs/team.md](docs/team.md).
+
+**Stage 1 submission deadline: October 30, 2026, at 23:59 (Europe/Warsaw).**
 
 Stage 1 requires two datasets, exploratory data analysis, research questions, and one PDF report. Later work includes two supervised methods, two unsupervised methods, NLP, transformer models, and a simple interface for exploring results. These analyses, models, and the interface are not implemented yet.
 
@@ -66,7 +68,7 @@ Source: [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/). URLs pinn
 
 ## Project plan
 
-See `docs/project-checklist.md` for the required deliverables and `docs/research-plan.md` for a proposed use of the two datasets. The assignment lists conflicting Stage 1 deadlines: October 30 and October 31, 2026, both at 23:59. Confirm the correct date with the instructor.
+See `docs/project-checklist.md` for the required deliverables, `docs/research-plan.md` for a proposed use of the two datasets, and `docs/team.md` for task ownership. The team lead confirmed October 30, 2026, at 23:59 as the Stage 1 deadline, resolving the conflicting dates in the assignment PDF.
 
 ## Branches
 

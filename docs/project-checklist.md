@@ -4,7 +4,8 @@ Source: `requirements/project-requirements.pdf` (ML_proj_1.pdf, the instructor's
 
 ## Organization and repository
 
-- [ ] Form a team of 4-5 people and record names, student IDs, and responsibilities in the submitted report.
+- [x] Form a team of 4-5 people and record names, student IDs, and planned responsibilities in `team.md`.
+- [ ] Include the team roster and actual contributions in the submitted report.
 - [ ] Choose a topic and formulate research questions that combine insights from natural-language and numeric analyses.
 - [x] Store source code, the prepared datasets, and data provenance on GitHub.
 - [ ] Store all project reports in the repository.
@@ -19,7 +20,7 @@ Source: `requirements/project-requirements.pdf` (ML_proj_1.pdf, the instructor's
 - [ ] Prepare one PDF report containing team details and responsibilities, data sources, subset selection if applicable, EDA, research questions, and the GitHub repository link.
 - [ ] Submit that single PDF to the project section on Platon.
 
-**Deadline discrepancy:** the document header says Friday, October 30, 2026, at 23:59; the Stage 1 section says October 31, 2026, at 23:59. Confirm the correct date with the instructor; do not assume the later date.
+**Confirmed Stage 1 deadline: October 30, 2026, at 23:59 (Europe/Warsaw).** The team lead confirmed this date, resolving the conflicting dates in the assignment PDF. Task owners and responsibilities are listed in `team.md`.
 
 ## Full project
 
