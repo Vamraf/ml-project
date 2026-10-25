@@ -3,7 +3,7 @@
 Analysis of Amazon Reviews 2023, Video Games category.
 The complete category contains **4,624,615 reviews** and **137,269 products**.
 
-This machine learning project combines natural-language and numeric data from a public, real-world dataset. The instructor's requirements (ML_proj_1.pdf) are stored in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`. The team, research questions, and methods still need to be selected.
+This machine learning project combines natural-language and numeric data from a public, real-world dataset. The instructor's requirements (ML_proj_1.pdf) are stored in `docs/requirements/project-requirements.pdf`; an English checklist is in `docs/project-checklist.md`.
 
 Stage 1 requires two datasets, exploratory data analysis, research questions, and one PDF report. Later work includes two supervised methods, two unsupervised methods, NLP, transformer models, and a simple interface for exploring results. These analyses, models, and the interface are not implemented yet.
 
