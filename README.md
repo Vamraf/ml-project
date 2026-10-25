@@ -73,3 +73,7 @@ See `docs/project-checklist.md` for the required deliverables, `docs/research-pl
 ## Branches
 
 `main` contains the project structure and dataset.
+
+## Repository access
+
+The repository is public: anyone with [the project link](https://github.com/Vamraf/ml-project) can view and clone it. Only the owner and collaborators granted write access can push changes to this repository. The owner will invite team members separately.
