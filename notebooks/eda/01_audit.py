@@ -13,18 +13,22 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+# Numeric feature columns audited separately from identifiers and titles.
 NUMERIC = ['price_usd', 'average_rating', 'rating_number', 'image_count',
            'video_count', 'feature_count', 'category_count', 'description_section_count']
 
 
 def resolve_input(value=None):
     """Support the shared study folder and the repository layout."""
+    # A supplied input path overrides automatic dataset discovery.
     if value is not None:
         path = Path(value).expanduser().resolve()
         if not path.is_file():
             raise FileNotFoundError(path)
         return path
+    # Start at the script directory so the shell working directory is irrelevant.
     base = Path(__file__).resolve().parent
+    # Support both a flat data folder and the repository data/numeric layout.
     for folder in [base, *base.parents]:
         for path in [folder / 'products_numeric.csv', folder / 'data/numeric/products_numeric.csv']:
             if path.is_file():
@@ -42,10 +46,13 @@ def default_output(path):
 def load_products(path):
     # Preserve literal strings, then normalize empty/whitespace-only cells.
     frame = pd.read_csv(path, encoding='utf-8-sig', keep_default_na=False)
+    # Reject an empty or structurally incompatible table before calculating statistics.
     required = {'parent_asin', 'price_usd', 'average_rating', 'rating_number'}
     if frame.empty or not required.issubset(frame.columns):
         raise ValueError(f'Empty dataset or missing required columns: {sorted(required - set(frame.columns))}')
+    # Count whitespace-only cells as missing rather than treating them as values.
     frame = frame.replace(r'^\s*$', np.nan, regex=True)
+    # Track failed conversions separately from cells that were already missing.
     coercions = {}
     for column in NUMERIC:
         if column in frame:
@@ -57,10 +64,13 @@ def load_products(path):
 
 def audit(frame, coercions):
     """Check completeness, identifiers, numeric domains, and duplicate records."""
+    # Summarize missingness for every column, including completely empty columns.
     counts = frame.isna().sum()
     quality = pd.DataFrame({'column': frame.columns, 'dtype': frame.dtypes.astype(str).values,
                             'missing_count': counts.values, 'missing_percent': counts.values / len(frame) * 100})
     quality['entire_column_missing'] = quality['missing_count'].eq(len(frame))
+    # Flag suspicious numeric domains without silently modifying the source data.
+    # A zero price is reported separately; it is not automatically an error.
     invalid = {'missing_parent_asin': int(frame.parent_asin.isna().sum()),
                'negative_price': int(frame.price_usd.lt(0).sum()),
                'zero_price': int(frame.price_usd.eq(0).sum()),
@@ -72,6 +82,7 @@ def audit(frame, coercions):
     for column in NUMERIC:
         if column in frame:
             invalid[f'nonfinite_{column}'] = int((frame[column].notna() & ~np.isfinite(frame[column])).sum())
+    # Distinguish exact repeated rows from repeated product identifiers.
     summary = {'rows': len(frame), 'columns': len(frame.columns),
                'exact_duplicate_rows': int(frame.duplicated().sum()),
                'duplicate_parent_asin': int(frame.parent_asin.duplicated().sum()),
@@ -82,8 +93,10 @@ def audit(frame, coercions):
 def write_audit(frame, coercions, path, output):
     output.mkdir(parents=True, exist_ok=True)
     quality, summary = audit(frame, coercions)
+    # Save report tables so the audit does not depend on terminal output.
     quality.to_csv(output / 'source_data_quality.csv', index=False)
     frame.select_dtypes(include='number').describe(percentiles=[.01, .25, .5, .75, .95, .99]).to_csv(output / 'source_descriptive_statistics.csv')
+    # Record an input checksum to identify the exact dataset used in this run.
     with path.open('rb') as stream:
         digest = hashlib.file_digest(stream, 'sha256').hexdigest()
     summary.update(input_file=str(path), input_sha256=digest,
@@ -95,6 +108,7 @@ def write_audit(frame, coercions, path, output):
 
 
 def main():
+    # Parse optional paths, load the complete input table, and export the audit.
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path)
     parser.add_argument('--output', type=Path)
@@ -106,5 +120,6 @@ def main():
     print(f'Audit saved to {output}')
 
 
+# Importing these helpers from 02_analysis.py must not start another audit run.
 if __name__ == '__main__':
     main()

@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 
 import matplotlib
+# Generate image files without requiring an interactive plotting window.
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,19 +30,23 @@ MIN_REVIEWS = 10  # A sensitivity threshold, not a guarantee of rating reliabili
 
 
 def save(fig, folder, name):
+    # Save a readable image and release the figure after export.
     fig.tight_layout()
     fig.savefig(folder / name, dpi=180, bbox_inches='tight')
     plt.close(fig)
 
 
 def fences(series):
+    # Tukey fences are diagnostic thresholds, not proof that an observation is wrong.
     q1, q3 = series.quantile([.25, .75])
     return q1 - 1.5 * (q3 - q1), q3 + 1.5 * (q3 - q1)
 
 
 def correlation_tables(frame, output, label):
+    # Preserve original and transformed variables in separate correlation tables.
     columns = ['price_usd', 'average_rating', 'rating_number']
     raw = frame[columns]
+    # Transform price and rating count only; average rating stays on its original scale.
     logs = raw.rename(columns={'price_usd': 'log1p_price_usd', 'rating_number': 'log1p_rating_number'}).copy()
     logs['log1p_price_usd'] = np.log1p(logs['log1p_price_usd'])
     logs['log1p_rating_number'] = np.log1p(logs['log1p_rating_number'])
@@ -50,12 +55,15 @@ def correlation_tables(frame, output, label):
         matrix.to_csv(output / f'{label}_{method}.csv')
     # Record pairwise observation counts because price is missing for many products.
     valid = raw.notna().astype('int64')
+    # Each matrix entry counts products with both corresponding features available.
     valid.T.dot(valid).to_csv(output / f'{label}_pairwise_counts.csv')
     return matrices
 
 
 def rating_groups(frame, output, figures, exact=False):
+    # Rating/count summaries must not discard products solely because price is missing.
     values = frame.dropna(subset=['average_rating', 'rating_number']).copy()
+    # Keep exact recorded ratings separate from the broader interval-based view.
     if exact:
         values['group'] = values.average_rating.round(1)
         title = 'Exact recorded rating (0.1-star precision)'
@@ -67,6 +75,7 @@ def rating_groups(frame, output, figures, exact=False):
         values['group'] = pd.cut(values.average_rating, bins=edges, labels=labels, right=False)
         title = 'Explicit rating intervals (final interval includes 5.0)'
         filename = 'rating_intervals'
+    # Export group size as well as central tendency and the low-rating-count share.
     summary = values.groupby('group', observed=True).agg(n=('rating_number', 'size'),
                      median_reviews=('rating_number', 'median'), share_le3=('rating_number', lambda s: s.le(3).mean()))
     summary.to_csv(output / f'{filename}.csv')
@@ -85,6 +94,7 @@ def rating_groups(frame, output, figures, exact=False):
 
 
 def main():
+    # STEP 1: Resolve input paths and configurable output locations.
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path)
     parser.add_argument('--output', type=Path)
@@ -102,6 +112,7 @@ def main():
         figures = output / 'figures'
     figures.mkdir(parents=True, exist_ok=True)
     frame, coercions = audit_module.load_products(path)
+    # Persist source quality checks before making any analysis-specific changes.
     source_summary = audit_module.write_audit(frame, coercions, path, output)
 
     # Fail explicitly for malformed data instead of truncating counts or hiding errors.
@@ -110,15 +121,18 @@ def main():
              (key in ['missing_parent_asin', 'negative_price', 'rating_outside_1_5', 'negative_rating_count', 'noninteger_rating_count'] or key.startswith('nonfinite_'))}
     if fatal or any(coercions.values()):
         raise ValueError(f'Correct malformed source values before analysis: {fatal}; conversion failures: {coercions}')
+    # STEP 2: Remove only exact duplicate rows; conflicting product IDs need review.
     before = len(frame)
     frame = frame.drop_duplicates().copy()
     if frame.parent_asin.duplicated().any():
         raise ValueError('Conflicting duplicate parent_asin values need manual resolution')
     zeros = int(frame.price_usd.eq(0).sum())
+    # Change the zero-price interpretation only when explicitly requested.
     if args.zero_price_as_missing:
         frame.loc[frame.price_usd.eq(0), 'price_usd'] = np.nan
     # The full prepared table preserves products whose price is unknown.
     frame.to_csv(output / 'products_prepared_all.csv', index=False)
+    # Price relationships use complete cases; the full prepared table remains available.
     work = frame.dropna(subset=['price_usd', 'average_rating', 'rating_number']).copy()
     if len(work) < 20 or work.price_usd.nunique() < 2:
         raise ValueError('Insufficient complete cases or price variation for this analysis')
@@ -126,6 +140,7 @@ def main():
     sns.set_theme(style='whitegrid')
 
     # Group comparisons describe associations with missingness, not MAR/MNAR proof.
+    # STEP 3: Compare observed characteristics of products with and without prices.
     differences = []
     has_price = frame.price_usd.notna()
     for col in ['average_rating', 'rating_number']:
@@ -141,6 +156,7 @@ def main():
     pd.DataFrame(differences).to_csv(output / 'price_missingness_associations.csv', index=False)
 
     # Flag outliers on both scales; retain extremes in the primary analysis.
+    # STEP 4: Build alternative outlier treatments for sensitivity comparisons.
     outlier_rows = []
     filtered = pd.Series(True, index=work.index)
     winsorized = work.copy()
@@ -152,11 +168,13 @@ def main():
             outlier_rows.append(dict(column=col, scale=scale, lower=lo if scale == 'raw' else np.expm1(lo),
                                      upper=hi if scale == 'raw' else np.expm1(hi), n_outliers=int(outside.sum()),
                                      percent=outside.mean() * 100))
+            # Apply log-scale fences only to sensitivity variants, not the primary data.
             if scale == 'log1p':
                 filtered &= ~outside
                 winsorized[col] = np.expm1(series.clip(lo, hi))
     pd.DataFrame(outlier_rows).to_csv(output / 'outlier_flags_iqr.csv', index=False)
 
+    # STEP 5: Use positive values for log-price display; retain zeros elsewhere.
     positive = work.loc[work.price_usd.gt(0)]
     p99 = work.price_usd.quantile(.99)
     hidden = int(work.price_usd.gt(p99).sum())
@@ -182,6 +200,7 @@ def main():
 
     # Export all-product pairwise correlations AND common complete-case comparisons.
     correlation_tables(frame, output, 'all_products_pairwise')
+    # Use identical complete-case rows for the three heatmaps shown together.
     matrices = correlation_tables(work, output, 'price_complete_cases')
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     for ax, matrix, title in zip(axes, matrices, ['Pearson: original values', 'Pearson: log1p price/count', 'Spearman']):
@@ -191,6 +210,7 @@ def main():
     save(fig, figures, '02_correlations.png')
 
     # Compare sensitivity choices without calling every extreme value an error.
+    # STEP 6: Check whether outlier handling or low-count products affect associations.
     sensitivity = []
     for label, subset in [('primary', work), ('log_iqr_filter', work.loc[filtered]),
                           ('log_iqr_winsorized', winsorized), ('at_least_10_ratings', work.loc[work.rating_number.ge(MIN_REVIEWS)])]:
@@ -200,6 +220,7 @@ def main():
     pd.DataFrame(sensitivity).to_csv(output / 'correlation_sensitivity.csv', index=False)
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    # STEP 7: Show dense relationships and robust summaries using display transforms.
     specs = [(np.log1p(work.price_usd), work.average_rating, 'log1p(price USD)', 'Average rating'),
              (np.log1p(work.price_usd), np.log1p(work.rating_number), 'log1p(price USD)', 'log1p(rating count)'),
              (work.average_rating, np.log1p(work.rating_number), 'Average rating', 'log1p(rating count)')]
@@ -209,6 +230,7 @@ def main():
         groups = pd.DataFrame({'x': x, 'y': y}).groupby(pd.cut(x, bins=25), observed=True)
         summary = groups.agg(x=('x', 'median'), n=('y', 'count'), med=('y', 'median'),
                              q25=('y', lambda s: s.quantile(.25)), q75=('y', lambda s: s.quantile(.75)))
+        # Avoid drawing summary trends from bins supported by too few products.
         summary = summary.loc[summary.n.ge(200)]
         summary.to_csv(output / f'hexbin_trend_{i+1}.csv')
         ax.plot(summary.x, summary.med, color='red', label='Median; bins with n >= 200')
@@ -224,6 +246,7 @@ def main():
     groups = work.groupby('price_bucket', observed=True)
     summary = groups.agg(n=('average_rating', 'size'), mean_rating=('average_rating', 'mean'),
                          median_rating=('average_rating', 'median'), sem=('average_rating', 'sem'), median_reviews=('rating_number', 'median'))
+    # Approximate normal intervals assume independent product observations.
     summary['ci95_halfwidth'] = 1.96 * summary['sem']
     summary['mean_rating_ge10'] = work.loc[work.rating_number.ge(10)].groupby('price_bucket', observed=True).average_rating.mean()
     summary['n_ge10'] = work.loc[work.rating_number.ge(10)].groupby('price_bucket', observed=True).size()
@@ -244,8 +267,10 @@ def main():
     fig.suptitle(f'Price-complete subset, n={len(work):,}; intervals assume independent product observations')
     save(fig, figures, '04_price_groups.png')
 
+    # STEP 8: Compare interval groups and exact ratings using the full prepared table.
     rating_groups(frame, output, figures, exact=False)
     rating_groups(frame, output, figures, exact=True)
+    # This test uses exactly 5.0, rather than an interval containing 4.8 or 4.9.
     exact5 = frame.loc[frame.average_rating.eq(5), 'rating_number'].dropna()
     middle = frame.loc[frame.average_rating.between(4.3, 4.7), 'rating_number'].dropna()
     test = {'exact_5_n': len(exact5), 'exact_5_median_count': float(exact5.median()),
@@ -254,6 +279,7 @@ def main():
         u, p = stats.mannwhitneyu(exact5, middle, alternative='less')
         test.update(u=float(u), p_value=float(p), probability_superiority_half_ties=float(u / (len(exact5) * len(middle))))
     (output / 'exact_rating_comparison.json').write_text(json.dumps(test, indent=2), encoding='utf-8')
+    # STEP 9: Record scope, assumptions, and versions for the shared report.
     overview = {'source_rows': before, 'exact_duplicates_removed': before-len(frame), 'retained_all_products': len(frame),
                 'price_complete_cases': len(work), 'price_complete_percent': len(work)/len(frame)*100,
                 'source_zero_prices': zeros, 'zero_price_policy': 'replace with missing by explicit option' if args.zero_price_as_missing else 'retain; no evidence that zero is always invalid',
@@ -261,6 +287,7 @@ def main():
                 'primary_outlier_policy': 'retain; compare log-IQR filtering and winsorization separately',
                 'python': sys.version.split()[0], 'pandas': pd.__version__, 'numpy': np.__version__}
     (output / 'analysis_summary.json').write_text(json.dumps(overview, indent=2), encoding='utf-8')
+    # Export interpretation limits alongside numeric tables and figures.
     notes = f'''# Numeric EDA: findings and interpretation
 
 - Source: {path.name}, complete supplied product table ({before:,} rows). See audit_summary.json for the source checksum and quality checks.
@@ -281,5 +308,6 @@ def main():
     print(f'Completed. Tables, findings and figures: {output}', flush=True)
 
 
+# Execute the analysis only when this file is launched directly.
 if __name__ == '__main__':
     main()

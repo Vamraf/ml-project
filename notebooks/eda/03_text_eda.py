@@ -22,6 +22,7 @@ from pathlib import Path
 import re
 import sys
 
+# Import analysis dependencies with a clear installation message if any are missing.
 try:
     import numpy as np
     import pandas as pd
@@ -32,19 +33,23 @@ try:
 except ImportError as error:
     raise SystemExit('Install dependencies first: python -m pip install pandas numpy matplotlib scikit-learn') from error
 
+# Use the script location rather than a machine-specific working directory.
 BASE = Path(__file__).resolve().parent
 # Locate the dataset from the script position, independently of the working directory.
 PROJECT_ROOT = next((folder for folder in [BASE, *BASE.parents]
                      if (folder / 'data/raw').is_dir() and (folder / 'data/manifests').is_dir()), None)
 # Keep negation because it carries meaning in positive/negative review analysis.
 STOP_WORDS = set(ENGLISH_STOP_WORDS) - {'no', 'not', 'nor', 'never', 'cannot'}
+# Tokenize Unicode words and preserve internal apostrophes in contractions.
 WORD = re.compile(r"[^\W\d_]+(?:'[^\W\d_]+)*", re.UNICODE)
 
 
 def clean_text(value):
     """Remove markup and normalize whitespace while preserving sentiment cues."""
+    # Missing text becomes an empty string; the original text is stored separately.
     if pd.isna(value):
         return ''
+    # Remove HTML markup before decoding entities and normalizing whitespace.
     text = re.sub(r'<[^>]*>', ' ', str(value))
     text = html.unescape(text).replace('\u2019', "'")
     # Preserve punctuation, digits, Unicode, and contractions in this text view.
@@ -55,6 +60,7 @@ def read_data(path, limit):
     """Load a reproducible source prefix and preserve original row identities."""
     name = path.name.lower()
     if name.endswith(('.jsonl', '.jsonl.gz')):
+        # Compressed and uncompressed JSONL use the same row-by-row reader.
         opener = gzip.open if name.endswith('.gz') else open
         rows = []
         with opener(path, 'rt', encoding='utf-8') as stream:
@@ -63,6 +69,7 @@ def read_data(path, limit):
                 if index >= limit:
                     break
                 row = json.loads(line)
+                # Retain product and review keys needed for later joins and duplicate checks.
                 fields = ['rating', 'title', 'text', 'asin', 'parent_asin', 'user_id', 'timestamp']
                 rows.append({**{field: row.get(field) for field in fields}, 'review_row': index})
         frame = pd.DataFrame(rows)
@@ -76,6 +83,7 @@ def read_data(path, limit):
     required = {'rating', 'title', 'text', 'parent_asin', 'review_row'}
     if frame.empty or not required.issubset(frame.columns):
         raise ValueError(f'Input is empty or missing required columns: {sorted(required - set(frame.columns))}')
+    # Reject ambiguous row identifiers before sampling or joining review views.
     if frame['review_row'].isna().any() or frame['review_row'].duplicated().any():
         raise ValueError('review_row must contain unique, non-missing source IDs')
     frame['rating'] = pd.to_numeric(frame['rating'], errors='raise')
@@ -92,6 +100,7 @@ def save_plot(fig, path):
 
 
 def rating_table(frame):
+    # Include all five rating levels, even when a level has no rows in this input.
     counts = frame['rating'].value_counts().reindex(range(1, 6), fill_value=0)
     return pd.DataFrame({'rating': counts.index, 'count': counts.values,
                          'percent': counts.values / len(frame) * 100})
@@ -99,6 +108,8 @@ def rating_table(frame):
 
 def vocabulary(texts):
     """Count words and genuine adjacent bigrams without a dense feature matrix."""
+    # Count token occurrences and document presence separately; repeated words
+    # within one review contribute once to document frequency.
     words, documents, bigrams = Counter(), Counter(), Counter()
     for text in texts:
         tokens = [word for word in WORD.findall(text) if len(word) > 1]
@@ -112,6 +123,7 @@ def vocabulary(texts):
 
 
 def main():
+    # STEP 1: Configure source-prefix size, text-sample size, seed, and output paths.
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--input', type=Path, help='Local source data file')
     parser.add_argument('--output', type=Path, default=(PROJECT_ROOT / 'reports/stage-1/text_eda' if PROJECT_ROOT else BASE / 'text_eda'))
@@ -124,6 +136,7 @@ def main():
     args = parser.parse_args()
     if args.rows < 1 or args.sample_size < 1:
         parser.error('--rows and --sample-size must be positive')
+    # Prefer original review files when automatically locating repository data.
     if args.input is None:
         folders = [BASE]
         if PROJECT_ROOT:
@@ -140,6 +153,7 @@ def main():
     figures = (args.figures or (PROJECT_ROOT / 'reports/figures/text_eda' if PROJECT_ROOT else out)).resolve()
     figures.mkdir(parents=True, exist_ok=True)
     print(f'Loading up to {args.rows:,} source-prefix rows from {args.input}', flush=True)
+    # STEP 2: Load the requested source prefix; this is not a full-category random sample.
     frame = read_data(args.input, args.rows)
     loaded = len(frame)
 
@@ -151,6 +165,7 @@ def main():
     quality['missing_or_blank_percent'] = quality['missing_or_blank_count'] / loaded * 100
     quality['entire_column_empty'] = quality['missing_or_blank_count'] == loaded
     quality.to_csv(out / 'data_quality.csv', index=False)
+    # Keep the source rating distribution to compare it with retained data later.
     before_ratings = rating_table(frame)
     before_ratings.to_csv(out / 'rating_distribution_source_prefix.csv', index=False)
 
@@ -159,7 +174,9 @@ def main():
     identity = ['user_id', 'asin', 'timestamp', 'text']
     duplicate_mask = pd.Series(False, index=frame.index)
     identity_available = all(column in frame for column in identity)
+    # STEP 3: Check duplicate source identities only when the necessary fields exist.
     if identity_available:
+        # Incomplete identities cannot safely establish that two reviews are duplicates.
         eligible = frame[['user_id', 'asin', 'timestamp']].notna().all(axis=1)
         for column in ['user_id', 'asin', 'timestamp']:
             eligible &= frame[column].astype(str).str.strip().ne('')
@@ -169,14 +186,17 @@ def main():
     frame.loc[duplicate_mask, ['review_row', 'parent_asin']].to_csv(out / 'duplicate_rows.csv', index=False)
     nonempty = frame['text'].fillna('').astype(str).str.strip()
     repeated_text = int(nonempty[nonempty.ne('')].duplicated().sum())
+    # Apply the selected duplicate policy without changing the original input file.
     removed = 0 if args.keep_duplicates else duplicate_count
     if removed:
         frame = frame.loc[~duplicate_mask].copy()
 
     # Record exactly which retained source rows feed the more expensive text EDA.
+    # STEP 4: Draw a reproducible sample from retained rows and preserve original IDs.
     sample = frame.sample(n=min(args.sample_size, len(frame)), random_state=args.seed).copy()
     sample['text_original'] = sample['text']
     sample['text_cleaned'] = sample['text'].map(clean_text)
+    # Length statistics describe original text, independently of lexical cleaning.
     sample['char_length'] = sample['text'].fillna('').astype(str).str.len()
     sample['word_count'] = sample['text'].fillna('').astype(str).str.split().str.len()
     sample[['review_row', 'parent_asin', 'rating']].to_csv(out / 'sample_rows.csv', index=False)
@@ -185,6 +205,7 @@ def main():
     sample[['review_row', 'text_original', 'text_cleaned']].head(10).to_csv(out / 'cleaning_examples.csv', index=False)
     sample[['char_length', 'word_count']].describe(percentiles=[.5, .9, .95, .99]).to_csv(out / 'length_statistics.csv')
 
+    # STEP 5: Plot ratings for all retained prefix rows, not just the smaller text sample.
     ratings = rating_table(frame)
     ratings.to_csv(out / 'rating_distribution_retained.csv', index=False)
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
@@ -195,6 +216,7 @@ def main():
     save_plot(fig, figures / 'rating_distribution.png')
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+    # Count observations hidden by display cutoffs so the plot scope is explicit.
     hidden = {}
     for ax, field, limit, label in zip(axes, ['char_length', 'word_count'], [2000, 400], ['Characters', 'Whitespace-separated words']):
         values = sample[field]
@@ -205,13 +227,16 @@ def main():
     save_plot(fig, figures / 'review_lengths.png')
 
     print('Counting words and adjacent bigrams...', flush=True)
+    # STEP 6: Analyze all sampled texts and the exact one-star/five-star groups.
     counters = {}
     class_sizes = {}
     for label, subset in [('all', sample), ('5_star', sample[sample['rating'].eq(5)]), ('1_star', sample[sample['rating'].eq(1)])]:
         words, documents, bigrams = vocabulary(subset['text_cleaned'])
         counters[label] = words
         class_sizes[label] = len(subset)
+        # Normalize token frequency within each group to compare unequal class sizes.
         total_tokens = sum(words.values())
+        # Export raw counts, normalized counts, and review-level word prevalence.
         rows = [{'word': word, 'occurrences': count,
                  'per_10000_content_tokens': count / total_tokens * 10000,
                  'reviews_with_word': documents[word],
@@ -222,6 +247,7 @@ def main():
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
     for ax, label, color in zip(axes, ['5_star', '1_star'], ['#247a4a', '#922f36']):
+        # Reverse the top ten for horizontal bars, placing the largest at the top.
         top = counters[label].most_common(10)[::-1]
         total = sum(counters[label].values())
         if top:
@@ -233,6 +259,7 @@ def main():
 
     # Word clouds are optional illustrations; numeric frequency tables are primary.
     cloud_status = 'skipped by request'
+    # STEP 7: Optional word clouds reuse the same counted vocabulary and random seed.
     if not args.skip_wordcloud:
         try:
             from wordcloud import WordCloud
@@ -251,6 +278,7 @@ def main():
 
     # Persist provenance, decisions, and actual row counts alongside the figures.
     sample_id_hash = hashlib.sha256(','.join(sample['review_row'].astype(str)).encode()).hexdigest()
+    # STEP 8: Save actual row counts and sampling details needed to reproduce this run.
     summary = {'input_file': str(args.input.resolve()), 'selection': 'first N source rows, then a seeded random sample of retained rows',
                'requested_prefix_rows': args.rows, 'loaded_rows': loaded, 'duplicate_identity_columns': identity if identity_available else None,
                'duplicate_identity_rows': duplicate_count if identity_available else None, 'duplicate_rows_removed': removed,
@@ -263,6 +291,7 @@ def main():
     (out / 'run_summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding='utf-8')
     quality_total = int(quality.loc[quality['column'].eq('text'), 'missing_or_blank_count'].iloc[0])
     five_percent = float(ratings.loc[ratings['rating'].eq(5), 'percent'].iloc[0])
+    # Write findings and limitations for the report without claiming trained-model results.
     notes = f'''# Text EDA: findings and limitations
 
 - Source-prefix rows inspected: {loaded:,}; missing/blank review texts: {quality_total:,}.
@@ -285,5 +314,6 @@ See data_quality.csv, both rating-distribution tables, length_statistics.csv, to
     print(f'Completed. Tables, cleaned sample and findings: {out}; figures: {figures}', flush=True)
 
 
+# Importing functions for checks must not trigger a complete analysis run.
 if __name__ == '__main__':
     main()
