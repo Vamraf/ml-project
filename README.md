@@ -4,6 +4,8 @@ Machine learning project using **Amazon Reviews 2023: Video Games**. The public,
 
 **Stage 1 deadline: October 30, 2026, at 23:59 (Europe/Warsaw).** The team lead confirmed this date to resolve conflicting dates in the assignment document.
 
+**Stage 1 report:** [Read the final PDF report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) (12 pages). The repository contains the required Stage 1 materials. Uploading the PDF to Platon is a separate submission step and has not been verified here.
+
 ## Stage 1 status
 
 | Deliverable | Current status |
@@ -13,11 +15,29 @@ Machine learning project using **Amazon Reviews 2023: Video Games**. The public,
 | Numeric EDA: Andrei | Published audit, analysis, instructions, and 6 figures |
 | Text EDA: Daniil | Published analysis, instructions, and 4 figures |
 | Combined text/numeric EDA: Mykola | Published full-data analysis, instructions, and 5 figures |
-| Research questions | Proposed in [docs/research-plan.md](docs/research-plan.md); finalize and include in the report |
-| Final Stage 1 PDF report | Not yet published in `reports/stage-1/` |
-| Submission to Platon | Requires the final PDF; submission is not tracked by this repository |
+| Research questions | Three Stage 1 questions are stated on report page 4, with initial evidence and interpretation in the results; [docs/research-plan.md](docs/research-plan.md) remains a broader proposal for later modeling |
+| Final Stage 1 PDF report | Published: [Raport_etap_1_Amazon_Video_Games.pdf](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf), 12 pages |
+| Submission to Platon | Upload the final PDF by the deadline; submission is not confirmed by its presence on GitHub |
 
 Stage 1 requires a single PDF covering the team and contributions, data sources and subset construction, EDA, research questions, and the GitHub link. The instructor's original document is [project-requirements.pdf](docs/requirements/project-requirements.pdf). The [project checklist](docs/project-checklist.md) describes required work; its unchecked items are not an up-to-date completion dashboard.
+
+### Stage 1 requirements check
+
+The published report was checked against the assignment's Stage 1 list. This checks repository contents, not instructor acceptance or submission to Platon.
+
+| Assignment requirement | Evidence in the published report and repository |
+| --- | --- |
+| Team of 4-5 people with names, student IDs, and responsibilities | Five members on the title page and the responsibility table on page 3; [team record](docs/team.md) |
+| Public, real-world natural-language and numeric data | Dataset description and file counts on page 4; text and numeric files under `data/` |
+| Complete data source information | Source repository, pinned revision, collection record, bibliography, and [download manifest](data/manifests/download_manifest.json) |
+| Reproducible subset construction | Prefix size, duplicate policy, sample size, seed, and full-data aggregation described on page 5; implemented in the EDA scripts |
+| Exploratory analysis using statistical methods | Descriptive statistics, missing values, distributions, correlations, group comparisons, and sensitivity analyses on pages 6-11 |
+| Research questions | P1-P3 on page 4, interpreted in the numeric, text, and combined analysis sections |
+| GitHub repository containing code and data | Repository link on page 3 and reproduction commands on page 12 |
+| One PDF report stored on GitHub | [Final Stage 1 report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) |
+| Upload the PDF to the project section on Platon | External action; not verified by this repository |
+
+**Interpretation note:** P2 asks about both length and vocabulary differences between high- and low-rated reviews. The current text EDA compares vocabulary by rating but shows pooled length distributions. A direct rating-group length comparison remains a follow-up before claiming a complete answer to that part of P2.
 
 Supervised models, unsupervised models, transformers, and the results interface belong to later project work and are not implemented yet. The placeholder folders for that work do not indicate completed features.
 
@@ -62,7 +82,7 @@ Keep `01_audit.py` and `02_analysis.py` together: the numeric analysis imports a
 | Text: Daniil | [03_text_eda.py](notebooks/eda/03_text_eda.py) | [Text EDA](notebooks/eda/README-text-eda.md) | [text_eda](reports/figures/text_eda/) |
 | Combined: Mykola | [04_combined_eda.py](notebooks/eda/04_combined_eda.py) | [Combined EDA](notebooks/eda/README-combined-eda.md) | [combined_eda](reports/figures/combined_eda/) |
 
-Generated tables, quality checks, sampling details, and findings go to `reports/stage-1/numeric_eda/`, `reports/stage-1/text_eda/`, and `reports/stage-1/combined_eda/`. Published PNGs are already available under `reports/figures/`; open them directly on GitHub. The generated working tables are not currently committed, and these outputs do not replace the required final PDF report.
+Generated tables, quality checks, sampling details, and findings go to `reports/stage-1/numeric_eda/`, `reports/stage-1/text_eda/`, and `reports/stage-1/combined_eda/`. Published PNGs are already available under `reports/figures/`; open them directly on GitHub. The generated working tables are not currently committed. Their methods and selected results are documented in the [published final PDF report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf).
 
 ### Analysis scope and interpretation
 
@@ -119,7 +139,7 @@ reports/
     text_eda/          Daniil: 4 published PNGs
     numeric_eda/       Andrei: 6 published PNGs
     combined_eda/      Mykola: 5 published PNGs
-  stage-1/             Destination for generated tables and final report
+  stage-1/             Published final PDF and destination for generated tables
 scripts/               Source download, restoration, and preparation
 docs/                  Team, research plan, checklist, and original assignment
 app/                   Placeholder for the future results interface
