@@ -35,7 +35,6 @@ The published report was checked against the assignment's Stage 1 list. This che
 | Research questions | P1-P3 on page 4, interpreted in the numeric, text, and combined analysis sections |
 | GitHub repository containing code and data | Repository link on page 3 and reproduction commands on page 12 |
 | One PDF report stored on GitHub | [Final Stage 1 report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) |
-| Upload the PDF to the project section on Platon | External action; not verified by this repository |
 
 **Interpretation note:** P2 asks about both length and vocabulary differences between high- and low-rated reviews. The current text EDA compares vocabulary by rating but shows pooled length distributions. A direct rating-group length comparison remains a follow-up before claiming a complete answer to that part of P2.
 
