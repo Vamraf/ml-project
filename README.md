@@ -4,7 +4,7 @@ Machine learning project using **Amazon Reviews 2023: Video Games**. The public,
 
 **Stage 1 deadline: October 30, 2026, at 23:59 (Europe/Warsaw).** The team lead confirmed this date to resolve conflicting dates in the assignment document.
 
-**Stage 1 report:** [Read the final PDF report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) (12 pages). The repository contains the required Stage 1 materials. Uploading the PDF to Platon is a separate submission step and has not been verified here.
+**Stage 1 report:** [Read the final PDF report](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) (12 pages). The repository contains the required Stage 1 materials.
 
 ## Stage 1 status
 
