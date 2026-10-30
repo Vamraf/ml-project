@@ -1,10 +1,10 @@
 # Stage 1: numeric EDA (Andrei Kudrytski, 71527)
 
-The analysis consists of `01_audit.py` and `02_analysis.py`. Keep both files together: the second imports audit helpers from the first. Published figures are in `reports/figures/numeric_eda/`.
+The analysis consists of [01_audit.py](01_audit.py) and [02_analysis.py](02_analysis.py). Keep both files together: the second imports audit helpers from the first. The six published figures are in [reports/figures/numeric_eda/](../../reports/figures/numeric_eda/). The analysis addresses P1 in the [published Stage 1 PDF report](../../reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) and the [research plan](../../docs/research-plan.md).
 
 ## Reproduce the analysis
 
-Use Python 3.11+ and run from the repository root after cloning and authenticating to the private repository:
+Use Python 3.11+ and run from the repository root after cloning the public repository. Authentication is not required for public read access. See the [main README](../../README.md#get-the-project-and-data) for cloning instructions and Git LFS setup.
 
 ```powershell
 git lfs install
@@ -17,6 +17,8 @@ python notebooks/eda/02_analysis.py
 Both scripts find `data/numeric/products_numeric.csv` relative to their location, independently of the current working directory. No personal machine paths are hardcoded. For another file, pass `--input PATH`.
 
 Audit results, numeric tables, prepared data, and findings are generated in `reports/stage-1/numeric_eda/`. The analysis saves figures in `reports/figures/numeric_eda/`. Override table and figure destinations with `--output PATH` and `--figures PATH`, respectively (`--figures` applies to `02_analysis.py`).
+
+The six published PNGs and final PDF are committed. Generated working tables, audit outputs, and prepared analysis data are not currently committed; run the scripts to reproduce them.
 
 ## Published run and interpretation
 
@@ -34,4 +36,4 @@ The run was checked with Python 3.14.3, pandas 3.0.1, and NumPy 2.4.2. Data prov
 
 Published figures: `01_distributions.png`, `02_correlations.png`, `03_relationships.png`, `04_price_groups.png`, `exact_rating_groups.png`, and `rating_intervals.png`.
 
-These scripts implement Stage 1 EDA; numeric prediction models are planned for later stages. The generated findings and tables support, but do not replace, the Stage 1 PDF report.
+These scripts implement Stage 1 EDA. Selected findings and their limitations are interpreted in the published PDF alongside the text and combined analyses. Numeric prediction models are planned for later stages and are not implemented here.

@@ -1,10 +1,10 @@
 # Stage 1: combined EDA (Mykola Zhuchok, 71899)
 
-The analysis code is `04_combined_eda.py`. Published figures are in `reports/figures/combined_eda/`.
+The analysis code is [04_combined_eda.py](04_combined_eda.py). The five published figures are in [reports/figures/combined_eda/](../../reports/figures/combined_eda/). The analysis addresses P3 in the [published Stage 1 PDF report](../../reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf) and the [research plan](../../docs/research-plan.md).
 
 ## Reproduce the analysis
 
-Use Python 3.11+ and run from the repository root after cloning and authenticating to the private repository:
+Use Python 3.11+ and run from the repository root after cloning the public repository. Authentication is not required for public read access. See the [main README](../../README.md#get-the-project-and-data) for cloning instructions and Git LFS setup.
 
 ```powershell
 git lfs install
@@ -25,6 +25,8 @@ This option selects the first million source rows, not a random sample. Record t
 
 Generated aggregates, joined tables, quality checks, correlation matrices, sensitivity results, and findings go to `reports/stage-1/combined_eda/`. Figures go to `reports/figures/combined_eda/`. Override paths using `--reviews`, `--products`, `--output`, and `--figures`.
 
+The five published PNGs and final PDF are committed. Generated working tables and aggregates are not currently committed; run the script to reproduce them. These product-level aggregates are separate from the optional review-row export produced by `scripts/combine_reviews.py` in `data/combined/`.
+
 ## Published full-data run
 
 - All 4,624,615 source reviews were processed; 3,618 texts and one title were blank. Blank text is excluded from length means while its valid rating remains in rating summaries.
@@ -42,4 +44,4 @@ The full-data run was checked with Python 3.14.3, pandas 3.0.1, and NumPy 2.4.2.
 
 Published figures: `01_combined_relationship.png`, `02_combined_relationship.png`, `03_combined_relationship.png`, `04_combined_correlations.png`, and `05_support_sensitivity.png`.
 
-This is the combined Stage 1 EDA contribution. K-means, LDA, and later prediction models are not implemented here; the team's PDF report must interpret these findings alongside the other contributions.
+This is the combined Stage 1 EDA contribution. The published PDF interprets these findings alongside the numeric and text analyses, including the sensitivity of results to review support. K-means, LDA, and later prediction models remain planned work and are not implemented here.
