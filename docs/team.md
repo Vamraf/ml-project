@@ -29,13 +29,12 @@ Artifacts: [analysis script](../notebooks/eda/03_text_eda.py), [figures](../repo
 
 Prepared the numeric data audit and EDA. Examined missing values, duplicate product identifiers, extreme values, and the distributions of prices, average ratings, and rating counts. Analyzed relationships between these variables and checked sensitivity to preprocessing choices. Delivered two scripts and six figures.
 
-Artifacts: [audit script](../notebooks/eda/01_audit.py), [analysis script](../notebooks/eda/02_analysis.py), [figures](../reports/figures/numeric_eda/), and [analysis instructions](../notebooks/eda/README-numeric-eda.md).
-
+Artifacts: [audit script](../notebooks/eda/01_audit.py), [analysis script](../notebooks/eda/02_analysis.py), [figures](../reports/figures/numeric_eda/).
 ### Mykola Zhuchok — 71899 · Combined analysis
 
 Aggregated review data by product and joined the results with product metadata. Analyzed relationships between review length, the share of negative ratings, and product characteristics. Checked how the findings changed with the number of reviews available per product. Delivered the combined analysis script and five figures.
 
-Artifacts: [analysis script](../notebooks/eda/04_combined_eda.py), [figures](../reports/figures/combined_eda/), and [analysis instructions](../notebooks/eda/README-combined-eda.md).
+Artifacts: [analysis script](../notebooks/eda/04_combined_eda.py), [figures](../reports/figures/combined_eda/).
 
 ### Artur Reznychenko — 71615 · Documentation and reproducibility
 
