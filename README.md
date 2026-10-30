@@ -17,13 +17,12 @@ Machine learning project using **Amazon Reviews 2023: Video Games**. The public,
 | Combined text/numeric EDA: Mykola | Published full-data analysis, instructions, and 5 figures |
 | Research questions | Three Stage 1 questions are stated on report page 4, with initial evidence and interpretation in the results; [docs/research-plan.md](docs/research-plan.md) remains a broader proposal for later modeling |
 | Final Stage 1 PDF report | Published: [Raport_etap_1_Amazon_Video_Games.pdf](reports/stage-1/Raport_etap_1_Amazon_Video_Games.pdf), 12 pages |
-| Submission to Platon | Upload the final PDF by the deadline; submission is not confirmed by its presence on GitHub |
 
-Stage 1 requires a single PDF covering the team and contributions, data sources and subset construction, EDA, research questions, and the GitHub link. The instructor's original document is [project-requirements.pdf](docs/requirements/project-requirements.pdf). The [project checklist](docs/project-checklist.md) describes required work; its unchecked items are not an up-to-date completion dashboard.
+Stage 1 requires a single PDF covering the team and contributions, data sources and subset construction, EDA, research questions, and the GitHub link. The instructor's original document is [project-requirements.pdf](docs/requirements/project-requirements.pdf). The [project checklist](docs/project-checklist.md) records completed Stage 1 deliverables, the remaining analysis follow-up, and planned work for later stages.
 
 ### Stage 1 requirements check
 
-The published report was checked against the assignment's Stage 1 list. This checks repository contents, not instructor acceptance or submission to Platon.
+The published report was checked against the assignment's Stage 1 list and the files currently available in the repository.
 
 | Assignment requirement | Evidence in the published report and repository |
 | --- | --- |
